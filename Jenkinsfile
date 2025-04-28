@@ -32,7 +32,8 @@ pipeline {
             sh '''
                 ls -la
                 pwd
-                sh 'test -f build/index.html'
+                cat /build/index.html
+                sh 'test -f /build/index.html'
             '''
             }
         }   
