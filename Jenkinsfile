@@ -32,7 +32,7 @@ pipeline {
                 sh '''
                     ls -la
                     pwd
-                    sh 'test -f build/index.html'
+                    sh 'test -f /build/index.html'
                 '''
             }
         }
