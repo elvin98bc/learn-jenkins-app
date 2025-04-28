@@ -3,8 +3,8 @@ pipeline {
 
     environment {
         // Set Docker Hub credentials and repository details
-        // DOCKER_CREDENTIALS = 'docker-hub-credentials-id'  // Jenkins credentials ID for Docker Hub login
-        DOCKER_IMAGE_NAME = 'app-jenkins'  // Docker image name (repository) on Docker Hub
+        DOCKER_CREDENTIALS = 'docker-hub-credentials'  // Jenkins credentials ID for Docker Hub login
+        DOCKER_IMAGE_NAME = 'elvin98bc/app-jenkins'  // Docker image name (repository) on Docker Hub
         DOCKER_TAG = 'latest'  // Docker tag for the image
     }
 
@@ -25,39 +25,39 @@ pipeline {
             }
         }
 
-        // stage('Login to Docker Hub') {
-        //     steps {
-        //         script {
-        //             // Login to Docker Hub using Jenkins credentials
-        //             docker.withCredentials([usernamePassword(credentialsId: "$DOCKER_CREDENTIALS", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-        //                 sh 'echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin'
-        //             }
-        //         }
-        //     }
-        // }
+        stage('Login to Docker Hub') {
+            steps {
+                script {
+                    // Login to Docker Hub using Jenkins credentials
+                    docker.withCredentials([usernamePassword(credentialsId: "$DOCKER_CREDENTIALS", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh 'echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin'
+                    }
+                }
+            }
+        }
 
-        // stage('Push Docker Image') {
-        //     steps {
-        //         script {
-        //             // Push the Docker image to Docker Hub
-        //             sh 'docker push $DOCKER_IMAGE_NAME:$DOCKER_TAG'
-        //         }
-        //     }
-        // }
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    // Push the Docker image to Docker Hub
+                    sh 'docker push $DOCKER_IMAGE_NAME:$DOCKER_TAG'
+                }
+            }
+        }
 
-        // stage('Cleanup') {
-        //     steps {
-        //         // Clean up local Docker images to free up space on the Jenkins agent
-        //         sh 'docker rmi $DOCKER_IMAGE_NAME:$DOCKER_TAG'
-        //     }
-        // }
+        stage('Cleanup') {
+            steps {
+                // Clean up local Docker images to free up space on the Jenkins agent
+                sh 'docker rmi $DOCKER_IMAGE_NAME:$DOCKER_TAG'
+            }
+        }
     }
 
-//     post {
-//         always {
-//             // Always run this block, regardless of success or failure
-//             echo 'Cleaning up after pipeline'
-//             sh 'docker system prune -f'  // Prune unused Docker images and containers
-//         }
-//     }
+    post {
+        always {
+            // Always run this block, regardless of success or failure
+            echo 'Cleaning up after pipeline'
+            sh 'docker system prune -f'  // Prune unused Docker images and containers
+        }
+    }
 }
