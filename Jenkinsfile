@@ -32,8 +32,8 @@ pipeline {
                     curl -f http://localhost:30000
                 '''
             }   
+        }
     }
-
     post {
         always {
             junit 'test-results/junit.xml'
