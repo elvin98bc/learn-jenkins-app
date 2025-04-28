@@ -6,7 +6,6 @@ pipeline {
             agent {
                 docker {
                     image 'node:18-alpine'
-                    reuseNode true
                 }
             }
             steps {
@@ -18,11 +17,10 @@ pipeline {
                 '''
             }
         }
-        stage('test') {
+        stage('Test') {
             agent {
                 docker {
                     image 'node:18-alpine'
-                    reuseNode true
                 }
             }
             steps {
@@ -36,7 +34,8 @@ pipeline {
     }
     post {
         always {
-            junit 'test-results/junit.xml'
+            // Ensure this path matches the location where your test results are being saved
+            junit '**/test-results/junit.xml'
         }
     }
 }
