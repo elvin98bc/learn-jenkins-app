@@ -20,21 +20,21 @@ pipeline {
                 '''
             }
         }
-         stage('Test') {
-            // agent {
-            //     docker {
-            //         image 'node:18-alpine'
-            //         reuseNode true
-            //     }
-            // }
-            steps {
-                echo "Testing..."
-                sh '''
-                    ls -la
-                    pwd
-                    sh 'test -f /build/index.html'
-                '''
+        stage('Test') {
+        // agent {
+        //     docker {
+        //         image 'node:18-alpine'
+        //         reuseNode true
+        //     }
+        // }
+        steps {
+            echo "Testing..."
+            sh '''
+                ls -la
+                pwd
+                sh 'test -f build/index.html'
+            '''
             }
-        }
+        }   
     }
 }
