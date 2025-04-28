@@ -31,6 +31,7 @@ pipeline {
                 echo "Testing..."
                 sh '''
                     ls -la
+                    pwd
                     sh 'test -f build/index.html'
                 '''
             }
