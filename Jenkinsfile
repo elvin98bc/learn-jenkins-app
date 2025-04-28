@@ -1,13 +1,12 @@
 pipeline {
-    agent any
-
+    agent {
+        docker {
+            image 'node:18-alpine'
+            args '-v /var/run/docker.sock:/var/run/docker.sock' // Mount Docker socket
+        }
+    }
     stages {
         stage('Build') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                }
-            }
             steps {
                 sh '''
                     ls -la
@@ -18,11 +17,6 @@ pipeline {
             }
         }
         stage('Test') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                }
-            }
             steps {
                 sh '''
                     docker run -d -p 30000:3000 myapp:latest
@@ -30,12 +24,6 @@ pipeline {
                     curl -f http://localhost:30000
                 '''
             }   
-        }
-    }
-    post {
-        always {
-            // Ensure this path matches the location where your test results are being saved
-            junit '**/test-results/junit.xml'
         }
     }
 }
