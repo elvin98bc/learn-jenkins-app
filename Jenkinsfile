@@ -4,13 +4,15 @@ pipeline {
     stages {
         stage('Build') {
             agent {
-                docker{
+                docker {
                     image 'node:18-alpine'
                     reuseNode true
                 }
             }
             steps {
-                sh'''
+                sh '''
+                    rm -rf node_modules
+                    npm cache clean --force
                     ls -la
                     node --version
                     npm --version
@@ -22,4 +24,3 @@ pipeline {
         }
     }
 }
-
