@@ -11,8 +11,6 @@ pipeline {
             }
             steps {
                 sh '''
-                    rm -rf node_modules
-                    npm cache clean --force
                     ls -la
                     node --version
                     npm --version
@@ -23,9 +21,16 @@ pipeline {
             }
         }
          stage('Test') {
+            // agent {
+            //     docker {
+            //         image 'node:18-alpine'
+            //         reuseNode true
+            //     }
+            // }
             steps {
                 echo "Testing..."
                 sh '''
+                    ls -la
                     sh 'test -f build/index.html'
                 '''
             }
