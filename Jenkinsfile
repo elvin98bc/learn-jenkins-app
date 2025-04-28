@@ -1,29 +1,63 @@
 pipeline {
-    agent {
-        docker {
-            image 'node:18-alpine'
-            args '-v /var/run/docker.sock:/var/run/docker.sock' // Mount Docker socket
-        }
+    agent any  // Use any available agent (can also use a specific docker agent)
+
+    environment {
+        // Set Docker Hub credentials and repository details
+        // DOCKER_CREDENTIALS = 'docker-hub-credentials-id'  // Jenkins credentials ID for Docker Hub login
+        DOCKER_IMAGE_NAME = 'app-jenkins'  // Docker image name (repository) on Docker Hub
+        DOCKER_TAG = 'latest'  // Docker tag for the image
     }
+
     stages {
-        stage('Build') {
+        stage('Checkout') {
             steps {
-                sh '''
-                    ls -la
-                    node --version
-                    npm --version
-                    docker build -t myapp:latest .
-                '''
+                // Checkout the source code from the repository
+                checkout scm
             }
         }
-        stage('Test') {
+
+        stage('Build Docker Image') {
             steps {
-                sh '''
-                    docker run -d -p 30000:3000 myapp:latest
-                    sleep 5
-                    curl -f http://localhost:30000
-                '''
-            }   
+                script {
+                    // Build the Docker image using the Dockerfile in the repository
+                    sh 'docker build -t $DOCKER_IMAGE_NAME:$DOCKER_TAG .'
+                }
+            }
         }
+
+        // stage('Login to Docker Hub') {
+        //     steps {
+        //         script {
+        //             // Login to Docker Hub using Jenkins credentials
+        //             docker.withCredentials([usernamePassword(credentialsId: "$DOCKER_CREDENTIALS", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+        //                 sh 'echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin'
+        //             }
+        //         }
+        //     }
+        // }
+
+        // stage('Push Docker Image') {
+        //     steps {
+        //         script {
+        //             // Push the Docker image to Docker Hub
+        //             sh 'docker push $DOCKER_IMAGE_NAME:$DOCKER_TAG'
+        //         }
+        //     }
+        // }
+
+        // stage('Cleanup') {
+        //     steps {
+        //         // Clean up local Docker images to free up space on the Jenkins agent
+        //         sh 'docker rmi $DOCKER_IMAGE_NAME:$DOCKER_TAG'
+        //     }
+        // }
     }
+
+//     post {
+//         always {
+//             // Always run this block, regardless of success or failure
+//             echo 'Cleaning up after pipeline'
+//             sh 'docker system prune -f'  // Prune unused Docker images and containers
+//         }
+//     }
 }
